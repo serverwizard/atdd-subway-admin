@@ -1,47 +1,64 @@
 package nextstep.subway.line;
 
+import io.restassured.response.ExtractableResponse;
+import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
+import nextstep.subway.line.domain.Line;
+import nextstep.subway.line.dto.LineRequest;
+import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.http.HttpStatus;
+
+import java.util.Arrays;
+import java.util.List;
+
+import static nextstep.subway.line.LineAcceptanceTestSupport.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
 public class LineAcceptanceTest extends AcceptanceTest {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
     void createLine() {
+        // given
+        LineRequest lineRequest = LineRequest.of("2호선", "green");
+
         // when
-        // 지하철_노선_생성_요청
+        ExtractableResponse<Response> extractableResponse = LineAcceptanceTestSupport.createLine(lineRequest);
+        LineResponse result = extractResult(extractableResponse, LineResponse.class);
 
         // then
-        // 지하철_노선_생성됨
+        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.CREATED.value());
+        assertThat(result.getName()).isEqualTo(lineRequest.getName());
+        assertThat(result.getColor()).isEqualTo(lineRequest.getColor());
     }
 
     @DisplayName("기존에 존재하는 지하철 노선 이름으로 지하철 노선을 생성한다.")
     @Test
     void createLine2() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineRequest lineRequest = LineRequest.of("2호선", "green");
+        LineAcceptanceTestSupport.createLine(lineRequest);
 
-        // when
-        // 지하철_노선_생성_요청
-
-        // then
-        // 지하철_노선_생성_실패됨
+        // when, then
+        assertThat(LineAcceptanceTestSupport.createLine(lineRequest).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
         // given
-        // 지하철_노선_등록되어_있음
-        // 지하철_노선_등록되어_있음
+        LineResponse createdLine1 = extractResult(LineAcceptanceTestSupport.createLine(LineRequest.of("2호선", "green")), LineResponse.class);
+        LineResponse createdLine2 = extractResult(LineAcceptanceTestSupport.createLine(LineRequest.of("7호선", "black")), LineResponse.class);
 
         // when
-        // 지하철_노선_목록_조회_요청
+        ExtractableResponse<Response> extractableResponse = findAllLines();
+        List<LineResponse> result = Arrays.asList(extractResult(extractableResponse, LineResponse[].class));
 
         // then
-        // 지하철_노선_목록_응답됨
-        // 지하철_노선_목록_포함됨
+        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.OK.value());
+        assertThat(result).contains(createdLine1, createdLine2);
     }
 
     @DisplayName("지하철 노선을 조회한다.")

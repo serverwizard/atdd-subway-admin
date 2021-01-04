@@ -2,7 +2,6 @@ package nextstep.subway.line;
 
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
-import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -12,19 +11,18 @@ import org.springframework.http.HttpStatus;
 import java.util.Arrays;
 import java.util.List;
 
-import static nextstep.subway.line.LineAcceptanceTestSupport.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DisplayName("지하철 노선 관련 기능")
-public class LineAcceptanceTest extends AcceptanceTest {
+public class LineAcceptanceTest extends LineAcceptanceTestSupport {
     @DisplayName("지하철 노선을 생성한다.")
     @Test
-    void createLine() {
+    void createLine1() {
         // given
         LineRequest lineRequest = LineRequest.of("2호선", "green");
 
         // when
-        ExtractableResponse<Response> extractableResponse = LineAcceptanceTestSupport.createLine(lineRequest);
+        ExtractableResponse<Response> extractableResponse = createLine(lineRequest);
         LineResponse result = extractResult(extractableResponse, LineResponse.class);
 
         // then
@@ -38,18 +36,18 @@ public class LineAcceptanceTest extends AcceptanceTest {
     void createLine2() {
         // given
         LineRequest lineRequest = LineRequest.of("2호선", "green");
-        LineAcceptanceTestSupport.createLine(lineRequest);
+        createLine(lineRequest);
 
         // when, then
-        assertThat(LineAcceptanceTestSupport.createLine(lineRequest).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
+        assertThat(createLine(lineRequest).statusCode()).isEqualTo(HttpStatus.BAD_REQUEST.value());
     }
 
     @DisplayName("지하철 노선 목록을 조회한다.")
     @Test
     void getLines() {
         // given
-        LineResponse createdLine1 = extractResult(LineAcceptanceTestSupport.createLine(LineRequest.of("2호선", "green")), LineResponse.class);
-        LineResponse createdLine2 = extractResult(LineAcceptanceTestSupport.createLine(LineRequest.of("7호선", "black")), LineResponse.class);
+        LineResponse createdLine1 = extractResult(createLine(LineRequest.of("2호선", "green")), LineResponse.class);
+        LineResponse createdLine2 = extractResult(createLine(LineRequest.of("7호선", "black")), LineResponse.class);
 
         // when
         ExtractableResponse<Response> extractableResponse = findAllLines();
@@ -64,7 +62,7 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        LineResponse createdLine = extractResult(LineAcceptanceTestSupport.createLine(LineRequest.of("2호선", "green")), LineResponse.class);
+        LineResponse createdLine = extractResult(createLine(LineRequest.of("2호선", "green")), LineResponse.class);
 
         // when
         LineResponse result = extractResult(findLineById(createdLine.getId()), LineResponse.class);
@@ -77,10 +75,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void updateLine() {
         // given
-        LineResponse createdLine = extractResult(LineAcceptanceTestSupport.createLine(LineRequest.of("2호선", "green")), LineResponse.class);
+        LineResponse createdLine = extractResult(createLine(LineRequest.of("2호선", "green")), LineResponse.class);
 
         // when
-        LineResponse result = extractResult(LineAcceptanceTestSupport.updateLine(createdLine.getId(), LineRequest.of("7호선", "black")), LineResponse.class);
+        LineResponse result = extractResult(updateLine(createdLine.getId(), LineRequest.of("7호선", "black")), LineResponse.class);
 
         // then
         assertThat(result.getName()).isEqualTo("7호선");
@@ -91,10 +89,10 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void deleteLine() {
         // given
-        LineResponse createdLine = extractResult(LineAcceptanceTestSupport.createLine(LineRequest.of("2호선", "green")), LineResponse.class);
+        LineResponse createdLine = extractResult(createLine(LineRequest.of("2호선", "green")), LineResponse.class);
 
         // when
-        ExtractableResponse<Response> extractableResponse = LineAcceptanceTestSupport.deleteLine(createdLine.getId());
+        ExtractableResponse<Response> extractableResponse = deleteLine(createdLine.getId());
 
         // then
         assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());

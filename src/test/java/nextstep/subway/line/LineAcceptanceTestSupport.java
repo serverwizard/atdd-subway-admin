@@ -3,12 +3,13 @@ package nextstep.subway.line;
 import io.restassured.RestAssured;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
+import nextstep.subway.AcceptanceTest;
 import nextstep.subway.line.dto.LineRequest;
 import org.springframework.http.MediaType;
 
-public class LineAcceptanceTestSupport {
+public class LineAcceptanceTestSupport extends AcceptanceTest {
 
-    public static ExtractableResponse<Response> createLine(LineRequest lineRequest) {
+    protected ExtractableResponse<Response> createLine(LineRequest lineRequest) {
         return RestAssured
                 .given()
                      .body(lineRequest)
@@ -19,11 +20,11 @@ public class LineAcceptanceTestSupport {
                 .extract();
     }
 
-    public static <T> T extractResult(ExtractableResponse<Response> response, Class<T> clazz) {
+    protected <T> T extractResult(ExtractableResponse<Response> response, Class<T> clazz) {
         return response.as(clazz);
     }
 
-    public static ExtractableResponse<Response> findAllLines() {
+    protected ExtractableResponse<Response> findAllLines() {
         return RestAssured
                 .given()
                 .when()
@@ -32,7 +33,7 @@ public class LineAcceptanceTestSupport {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> findLineById(Long id) {
+    protected ExtractableResponse<Response> findLineById(Long id) {
         return RestAssured
                 .given()
                 .when()
@@ -41,7 +42,7 @@ public class LineAcceptanceTestSupport {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> updateLine(Long id, LineRequest lineRequest) {
+    protected ExtractableResponse<Response> updateLine(Long id, LineRequest lineRequest) {
         return RestAssured
                 .given()
                     .body(lineRequest)
@@ -52,7 +53,7 @@ public class LineAcceptanceTestSupport {
                 .extract();
     }
 
-    public static ExtractableResponse<Response> deleteLine(Long id) {
+    protected ExtractableResponse<Response> deleteLine(Long id) {
         return RestAssured
                 .given()
                 .when()

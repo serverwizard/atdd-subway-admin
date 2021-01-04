@@ -27,8 +27,36 @@ public class LineAcceptanceTestSupport {
         return RestAssured
                 .given()
                 .when()
-                    .contentType(MediaType.APPLICATION_JSON_VALUE)
                     .get("/lines")
+                .then()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> findLineById(Long id) {
+        return RestAssured
+                .given()
+                .when()
+                    .get("/lines/" + id)
+                .then()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> updateLine(Long id, LineRequest lineRequest) {
+        return RestAssured
+                .given()
+                    .body(lineRequest)
+                .when()
+                    .contentType(MediaType.APPLICATION_JSON_VALUE)
+                    .put("/lines/" + id)
+                .then()
+                .extract();
+    }
+
+    public static ExtractableResponse<Response> deleteLine(Long id) {
+        return RestAssured
+                .given()
+                .when()
+                    .delete("/lines/" + id)
                 .then()
                 .extract();
     }

@@ -30,4 +30,28 @@ public class LineService {
                 .map(LineResponse::of)
                 .collect(Collectors.toList());
     }
+
+    public LineResponse findByLineId(Long id) {
+        Line savedLine = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 라인은 존재하지 않습니다."));
+
+        return LineResponse.of(savedLine);
+    }
+
+    public LineResponse updateByLineId(Long id, LineRequest lineRequest) {
+        Line savedLine = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 라인은 존재하지 않습니다."));
+
+        savedLine.updateName(lineRequest.getName());
+        savedLine.updateColor(lineRequest.getColor());
+
+        return LineResponse.of(savedLine);
+    }
+
+    public void deleteByLineId(Long id) {
+        Line savedLine = lineRepository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("해당 라인은 존재하지 않습니다."));
+
+        lineRepository.delete(savedLine);
+    }
 }

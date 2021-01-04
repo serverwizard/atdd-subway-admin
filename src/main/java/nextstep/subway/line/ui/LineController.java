@@ -29,6 +29,22 @@ public class LineController {
         return ResponseEntity.ok().body(lineService.findAllLines());
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<LineResponse> findById(@PathVariable Long id) {
+        return ResponseEntity.ok().body(lineService.findByLineId(id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<LineResponse> update(@PathVariable Long id, @RequestBody LineRequest lineRequest) {
+        return ResponseEntity.ok().body(lineService.updateByLineId(id, lineRequest));
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity delete(@PathVariable Long id) {
+        lineService.deleteByLineId(id);
+        return ResponseEntity.noContent().build();
+    }
+
     @ExceptionHandler({Exception.class})
     public ResponseEntity<Object> handleException(Exception e) {
         // 에러에 대한 로그 기록

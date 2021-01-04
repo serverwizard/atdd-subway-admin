@@ -3,7 +3,6 @@ package nextstep.subway.line;
 import io.restassured.response.ExtractableResponse;
 import io.restassured.response.Response;
 import nextstep.subway.AcceptanceTest;
-import nextstep.subway.line.domain.Line;
 import nextstep.subway.line.dto.LineRequest;
 import nextstep.subway.line.dto.LineResponse;
 import org.junit.jupiter.api.DisplayName;
@@ -65,38 +64,39 @@ public class LineAcceptanceTest extends AcceptanceTest {
     @Test
     void getLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineResponse createdLine = extractResult(LineAcceptanceTestSupport.createLine(LineRequest.of("2호선", "green")), LineResponse.class);
 
         // when
-        // 지하철_노선_조회_요청
+        LineResponse result = extractResult(findLineById(createdLine.getId()), LineResponse.class);
 
         // then
-        // 지하철_노선_응답됨
+        assertThat(result).isEqualTo(createdLine);
     }
 
     @DisplayName("지하철 노선을 수정한다.")
     @Test
     void updateLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineResponse createdLine = extractResult(LineAcceptanceTestSupport.createLine(LineRequest.of("2호선", "green")), LineResponse.class);
 
         // when
-        // 지하철_노선_수정_요청
+        LineResponse result = extractResult(LineAcceptanceTestSupport.updateLine(createdLine.getId(), LineRequest.of("7호선", "black")), LineResponse.class);
 
         // then
-        // 지하철_노선_수정됨
+        assertThat(result.getName()).isEqualTo("7호선");
+        assertThat(result.getColor()).isEqualTo("black");
     }
 
     @DisplayName("지하철 노선을 제거한다.")
     @Test
     void deleteLine() {
         // given
-        // 지하철_노선_등록되어_있음
+        LineResponse createdLine = extractResult(LineAcceptanceTestSupport.createLine(LineRequest.of("2호선", "green")), LineResponse.class);
 
         // when
-        // 지하철_노선_제거_요청
+        ExtractableResponse<Response> extractableResponse = LineAcceptanceTestSupport.deleteLine(createdLine.getId());
 
         // then
-        // 지하철_노선_삭제됨
+        assertThat(extractableResponse.statusCode()).isEqualTo(HttpStatus.NO_CONTENT.value());
     }
 }
